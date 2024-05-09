@@ -1,53 +1,28 @@
 {
-  "name": "vue-quiz-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
-  },
-  "dependencies": {
-    "axios": "^1.5.1",
-    "core-js": "^3.31.1",
-    "normalize-scss": "^7.0.1",
-    "vue": "^2.7.15"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-eslint": "~5.0.8",
-    "@vue/cli-plugin-babel": "~5.0.8",
-    "@vue/cli-service": "~5.0.8",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^9.17.0",
-    "sass": "^1.69.7",
-    "sass-loader": "^13.3.2",
-    "vue-template-compiler": "^2.7.15"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
+    "name": "vue-quiz-app",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build"
     },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "vue-eslint-parser"
+    "dependencies": {
+        "axios": "^1.5.1",
+        "core-js": "^3.31.1",
+        "normalize-scss": "^7.0.1",
+        "vue": "^2.7.15"
     },
-    "rules": {
-      "vue/no-parsing-error": [
-        "error",
-        {
-          "invalid-first-character-of-tag-name": false
-        }
-      ]
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "~5.0.8",
+        "@vue/cli-service": "~5.0.8",
+        "babel-eslint": "^10.1.0",
+        "sass": "^1.69.7",
+        "sass-loader": "^13.3.2",
+        "vue-template-compiler": "^2.7.15"
+    },
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not dead"
+    ]
 }
