@@ -1,0 +1,42 @@
+[
+    {
+        "type": "multiple",
+        "difficulty": "easy",
+        "category": "Entertainment: Television",
+        "question": "What is the name of the main character in &quot;The Flash&quot; TV series?",
+        "correct_answer": "Barry Allen",
+        "incorrect_answers": ["Oliver Queen", "Bart Allen", "Bruce Wayne"]
+    },
+    {
+        "type": "boolean",
+        "difficulty": "medium",
+        "category": "Entertainment: Television",
+        "question": "AMC&#039;s &quot;The Walking Dead&quot;, Rick, Carl, Daryl, Morgan, Carol and Maggie were introduced to us in Season 1.",
+        "correct_answer": "False",
+        "incorrect_answers": ["True"]
+    },
+    {
+        "type": "multiple",
+        "difficulty": "hard",
+        "category": "Entertainment: Television",
+        "question": "Which country does the YouTuber &quot;SinowBeats&quot; originate from?",
+        "correct_answer": "Scotland",
+        "incorrect_answers": ["England", "Sweden", "Germany"]
+    },
+    {
+        "type": "multiple",
+        "difficulty": "medium",
+        "category": "Entertainment: Television",
+        "question": "On the NBC show Community what was Star Burns&#039; real name?",
+        "correct_answer": "Alex",
+        "incorrect_answers": ["Todd", "Neal", "Grimus"]
+    },
+    {
+        "type": "multiple",
+        "difficulty": "easy",
+        "category": "Entertainment: Television",
+        "question": "When did the TV show Rick and Morty first air on Adult Swim?",
+        "correct_answer": "2013",
+        "incorrect_answers": ["2014", "2016", "2015"]
+    }
+]
