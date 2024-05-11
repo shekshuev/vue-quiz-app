@@ -4,18 +4,6 @@
             <Loading v-if="categories.length == 0" text="Loading..." />
             <div v-else>
                 <h1>Quizzem!</h1>
-                <h2>Difficulty</h2>
-                <div class="difficulties-container">
-                    <div
-                        class="setup-option"
-                        :class="{ 'is-selected': chosenDifficulty == difficulty.level }"
-                        v-for="(difficulty, index) in difficulties"
-                        :key="index"
-                        @click="setDifficulty(difficulty.level)"
-                    >
-                        {{ difficulty.name }}
-                    </div>
-                </div>
                 <h2>Category</h2>
                 <div class="categories-container">
                     <div
@@ -83,11 +71,6 @@
                         </p>
                     </div>
                 </div>
-                <div class="restart-buttons">
-                    <button class="button" type="button" @click="reset()">Try again</button>
-                    <button class="button" type="button" @click="resetQuestions()">Restart with new questions</button>
-                    <button class="button" type="button" @click="resetAll()">New setup</button>
-                </div>
             </div>
         </div>
     </div>
@@ -99,13 +82,6 @@ import axios from "axios";
 import Loading from "./Loading.vue";
 import FooterNav from "./FooterNav.vue";
 
-const difficulties = [
-    { level: null, name: "Any Difficulty" },
-    { level: "easy", name: "Easy" },
-    { level: "medium", name: "Medium" },
-    { level: "hard", name: "Hard" }
-];
-
 export default {
     name: "Quiz",
     components: {
@@ -116,9 +92,7 @@ export default {
         return {
             isStarted: false,
             categories: [],
-            difficulties: difficulties,
             chosenCategory: null,
-            chosenDifficulty: null,
             questions: [],
             chosenAnswers: [],
             currentQuestionIndex: 0
@@ -148,26 +122,20 @@ export default {
                     });
                 })
                 .catch(error => {
-                    console.log(error);
-                    alert("Sorry, something went wrong trying to load the categories. Please try again.");
+                    console.log(error.response.data?.message || error.message);
+                    alert(error.response.data?.message || error.message);
                 });
         },
         // Update the chosen category
         setCategory(category) {
             this.chosenCategory = category;
         },
-        // Update the chosen difficulty level
-        setDifficulty(level) {
-            this.chosenDifficulty = level;
-        },
         // Fetch question data from Open Trivia DB and call populateQuestions()
         startQuiz() {
-            const url = this.generateUrl();
-
             this.isStarted = true;
 
             axios
-                .get(url)
+                .get(`${process.env.VUE_APP_API_URL}/questions`)
                 .then(response => {
                     // If results not returned successfully
                     this.populateQuestions(response.data);
@@ -176,13 +144,6 @@ export default {
                     console.log(error);
                     alert("Sorry, something went wrong trying to load the questions. Please try again.");
                 });
-        },
-        // Create the Open Trivia DB URL with the chosen parameters
-        generateUrl() {
-            // let difficultyParam = this.chosenDifficulty == null ? "" : `&difficulty=${this.chosenDifficulty}`;
-            // let categoryParam = this.chosenCategory == null ? "" : `&category=${this.chosenCategory}`;
-
-            return `${process.env.VUE_APP_API_URL}/questions`;
         },
         // Populate questions array
         populateQuestions(responseJson) {
@@ -222,6 +183,8 @@ export default {
                 }
             });
 
+            axios.post(`${process.env.VUE_APP_API_URL}/finish`, { count: total });
+
             return total;
         },
         // Generate completionMessage based on score %
@@ -240,25 +203,6 @@ export default {
         answerCorrect(question, answerIndex) {
             return question.answers[answerIndex].correct;
             // question.answers.find(a => a.correct == true);
-        },
-        // Reset quiz with the same questions
-        reset() {
-            this.currentQuestionIndex = 0;
-            this.chosenAnswers = [];
-        },
-        // Reset quiz with the new questions
-        resetQuestions() {
-            this.questions = [];
-            this.startQuiz();
-            this.reset();
-        },
-        // Reset everything for new setup
-        resetAll() {
-            this.chosenCategory = null;
-            this.chosenDifficulty = null;
-            this.questions = [];
-            this.reset();
-            this.isStarted = false;
         },
         // Utility Durstenfeld array shuffle
         shuffle(arr) {
