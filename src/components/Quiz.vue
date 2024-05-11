@@ -183,8 +183,6 @@ export default {
                 }
             });
 
-            axios.post(`${process.env.VUE_APP_API_URL}/finish`, { count: total });
-
             return total;
         },
         // Generate completionMessage based on score %
@@ -219,6 +217,13 @@ export default {
             const textArea = document.createElement("textarea");
             textArea.innerHTML = html;
             return textArea.value;
+        }
+    },
+    watch: {
+        currentQuestionIndex(newVal) {
+            if (this.currentQuestionIndex >= this.questions.length) {
+                axios.post(`${process.env.VUE_APP_API_URL}/finish`, { count: this.calcScore() });
+            }
         }
     }
 };

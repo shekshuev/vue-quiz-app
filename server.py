@@ -2,6 +2,8 @@ from flask import Flask,request, jsonify
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
+from datetime import datetime
+
 
 load_dotenv()
 
@@ -44,6 +46,10 @@ def add_message():
     content = request.json
     print(content['count'])
     answered[last_ip_number] = content['count']
+    question_files = list(filter(lambda name: name.endswith('.json'), os.listdir(os.path.join(webapp.root_path, 'static', 'questions'))))
+    variant = last_ip_number % len(question_files)
+    with open("results.csv", "a") as myfile:
+        myfile.write(f"{datetime.now()}, {ip}, {question_files[variant]}, {content['count']}\n")
     return ('', 204)
 
 if __name__ == "__main__":
