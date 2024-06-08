@@ -19,7 +19,7 @@ count = 0
 count_variants = 0
 questions = []
 
-#with open(os.path.join(webapp.root_path, 'static', 'questions.json')) as f:
+# with open(os.path.join(webapp.root_path, 'static', 'questions.json')) as f:
 with open(os.path.join(os.path.dirname(sys.executable), 'static', 'questions.json')) as f:
     data = json.load(f)
     count = int(data["count"])
@@ -69,4 +69,4 @@ def add_message():
     return ('', 204)
 
 if __name__ == "__main__":
-    webapp.run(port=os.getenv("FLASK_PORT") or 8088)
+    webapp.run(host="0.0.0.0", port=os.getenv("FLASK_PORT") or 8088)
