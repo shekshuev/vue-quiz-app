@@ -1,78 +1,62 @@
 <template>
     <div>
-        <div class="setup-container" v-if="!isStarted">
-            <Loading v-if="categories.length == 0" text="Loading..." />
-            <div v-else>
-                <h1>Quizzem!</h1>
-                <h2>Category</h2>
-                <div class="categories-container">
-                    <div
-                        class="setup-option"
-                        :class="{ 'is-selected': chosenCategory == null }"
-                        @click="setCategory(null)"
-                    >
-                        Any Category
-                    </div>
-                    <div
-                        class="setup-option"
-                        :class="{ 'is-selected': chosenCategory == category.id }"
-                        v-for="category in categories"
-                        :key="category.id"
-                        @click="setCategory(category.id)"
-                    >
-                        {{ category.name }}
-                    </div>
+        <template v-if="error">
+            <h1>{{ error }}</h1>
+        </template>
+        <template v-else>
+            <div class="setup-container" v-if="!isStarted">
+                <div v-if="error">
+                    <h1>{{ error }}</h1>
                 </div>
-                <button class="button button--start" type="button" @click="startQuiz()">Start</button>
-            </div>
-        </div>
-        <div v-if="isStarted">
-            <Loading v-if="questions.length == 0" text="Thinking of questions..." />
-            <div class="quiz" v-else-if="currentQuestionIndex < questions.length" :key="currentQuestionIndex">
-                <h2>{{ questions[currentQuestionIndex].text | decodeHtml }}</h2>
-                <div class="answers-container">
-                    <div
-                        class="answer answer--option"
-                        v-for="(answer, index) in questions[currentQuestionIndex].answers"
-                        @click="selectAnswer(index)"
-                        :class="{ 'is-selected': chosenAnswers[currentQuestionIndex] == index }"
-                        :key="index"
-                    >
-                        {{ answer.text | decodeHtml }}
-                    </div>
+                <div v-else>
+                    <h1>Кафедра 13</h1>
+                    <button class="button button--start" type="button" @click="startQuiz()">Начать</button>
                 </div>
-                <FooterNav
-                    :questions="questions"
-                    :chosenAnswers="chosenAnswers"
-                    :currentQuestionIndex="currentQuestionIndex"
-                    v-on:update-question-index="currentQuestionIndex = $event"
-                />
             </div>
-            <div
-                v-else-if="currentQuestionIndex >= questions.length"
-                :key="currentQuestionIndex"
-                class="quiz-completed"
-            >
-                <p class="score">{{ calcScore() }} / {{ questions.length }}</p>
-                <h2 class="completion-message">{{ completionMessage() }}</h2>
-                <div class="quiz-answers">
-                    <div
-                        class="quiz-answer"
-                        v-for="(question, index) in questions"
-                        :class="{ 'is-selected': chosenAnswers[currentQuestionIndex] == index }"
-                        :key="index"
-                    >
-                        <h3 class="question">{{ question.text | decodeHtml }}</h3>
-                        <p class="answer answer--correct">
-                            Correct answer: {{ question.answers.find(a => a.correct == true).text | decodeHtml }}
-                        </p>
-                        <p v-if="!answerCorrect(question, chosenAnswers[index])" class="answer answer--incorrect">
-                            Your answer: {{ question.answers[chosenAnswers[index]].text | decodeHtml }}
-                        </p>
+            <div v-if="isStarted">
+                <Loading v-if="questions.length == 0" text="Загрузка вопросов..." />
+                <div class="quiz" v-else-if="currentQuestionIndex < questions.length" :key="currentQuestionIndex">
+                    <h2>{{ questions[currentQuestionIndex].text | decodeHtml }}</h2>
+                    <div class="answers-container">
+                        <div
+                            class="answer answer--option"
+                            v-for="(answer, index) in questions[currentQuestionIndex].answers"
+                            @click="selectAnswer(index)"
+                            :class="{ 'is-selected': chosenAnswers[currentQuestionIndex] == index }"
+                            :key="index"
+                        >
+                            {{ answer.text | decodeHtml }}
+                        </div>
+                    </div>
+                    <FooterNav
+                        :questions="questions"
+                        :chosenAnswers="chosenAnswers"
+                        :currentQuestionIndex="currentQuestionIndex"
+                        v-on:update-question-index="currentQuestionIndex = $event"
+                    />
+                </div>
+                <div v-else-if="currentQuestionIndex >= questions.length" class="quiz-completed">
+                    <p class="score">{{ calcScore() }} / {{ questions.length }}</p>
+                    <h2 class="completion-message">{{ completionMessage() }}</h2>
+                    <div class="quiz-answers">
+                        <div
+                            class="quiz-answer"
+                            v-for="(question, index) in questions"
+                            :class="{ 'is-selected': chosenAnswers[currentQuestionIndex] == index }"
+                            :key="index"
+                        >
+                            <h3 class="question">{{ question.text | decodeHtml }}</h3>
+                            <p class="answer answer--correct">
+                                Correct answer: {{ question.answers.find(a => a.correct == true).text | decodeHtml }}
+                            </p>
+                            <p v-if="!answerCorrect(question, chosenAnswers[index])" class="answer answer--incorrect">
+                                Your answer: {{ question.answers[chosenAnswers[index]].text | decodeHtml }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </template>
     </div>
 </template>
 
@@ -90,62 +74,28 @@ export default {
     },
     data() {
         return {
+            error: "",
             isStarted: false,
-            categories: [],
             chosenCategory: null,
             questions: [],
             chosenAnswers: [],
             currentQuestionIndex: 0
         };
     },
-    mounted() {
-        this.init();
-    },
     methods: {
-        // Fetch the Open Trivia DB categories
-        init() {
-            const url = `${process.env.VUE_APP_API_URL}/categories`;
-
-            axios
-                .get(url)
-                .then(response => {
-                    // If results not returned successfully
-                    if (response.data == null || !response.data.length) {
-                        return Promise.reject(response);
-                    }
-
-                    this.categories = response.data;
-
-                    // Remove extra categorisation from long category names
-                    this.categories.forEach(category => {
-                        category.name = category.name.replace(/\w+: /gi, "");
-                    });
-                })
-                .catch(error => {
-                    console.log(error.response.data?.message || error.message);
-                    alert(error.response.data?.message || error.message);
-                });
-        },
-        // Update the chosen category
-        setCategory(category) {
-            this.chosenCategory = category;
-        },
-        // Fetch question data from Open Trivia DB and call populateQuestions()
         startQuiz() {
             this.isStarted = true;
 
             axios
                 .get(`${process.env.VUE_APP_API_URL}/questions`)
                 .then(response => {
-                    // If results not returned successfully
                     this.populateQuestions(response.data);
                 })
                 .catch(error => {
                     console.log(error);
-                    alert("Sorry, something went wrong trying to load the questions. Please try again.");
+                    this.error = error.response.data.message;
                 });
         },
-        // Populate questions array
         populateQuestions(responseJson) {
             if (responseJson.length > 0) {
                 responseJson.forEach(questionData => {

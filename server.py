@@ -19,8 +19,8 @@ count = 0
 count_variants = 0
 questions = []
 
-# with open(os.path.join(webapp.root_path, 'static', 'questions.json')) as f:
-with open(os.path.join(os.path.dirname(sys.executable), 'static', 'questions.json')) as f:
+with open(os.path.join(webapp.root_path, 'static', 'questions.json')) as f:
+# with open(os.path.join(os.path.dirname(sys.executable), 'static', 'questions.json')) as f:
     data = json.load(f)
     count = int(data["count"])
     questions = data["questions"]
@@ -31,16 +31,6 @@ with open(os.path.join(os.path.dirname(sys.executable), 'static', 'questions.jso
 @webapp.route('/<path:path>')
 def catch_all(path):
     return webapp.send_static_file("index.html")
-
-@webapp.get('/categories')
-@cross_origin()
-def get_category():
-    ip = request.remote_addr
-    last_ip_number = int(ip.split('.')[3])
-    if answered.get(last_ip_number):
-        return jsonify({'message':'Вы уже прошли тестирование'}), 400
-    else:
-        return webapp.send_static_file("categories.json")
 
 @webapp.get('/questions')
 @cross_origin()
