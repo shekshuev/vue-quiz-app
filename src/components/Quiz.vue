@@ -87,7 +87,7 @@ export default {
             this.isStarted = true;
 
             axios
-                .get(`${process.env.VUE_APP_API_URL}/questions`)
+                .get(`${process.env.VUE_APP_API_URL ? process.env.VUE_APP_API_URL + "/" : ""}questions`)
                 .then(response => {
                     this.populateQuestions(response.data);
                 })
@@ -172,7 +172,9 @@ export default {
     watch: {
         currentQuestionIndex(newVal) {
             if (this.currentQuestionIndex >= this.questions.length) {
-                axios.post(`${process.env.VUE_APP_API_URL}/finish`, { count: this.calcScore() });
+                axios.post(`${process.env.VUE_APP_API_URL ? process.env.VUE_APP_API_URL + "/" : ""}finish`, {
+                    count: this.calcScore()
+                });
             }
         }
     }
